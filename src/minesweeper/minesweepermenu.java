@@ -1,3 +1,4 @@
+package minesweeper;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -9,6 +10,8 @@ import java.awt.Container;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
@@ -22,7 +25,7 @@ import javax.swing.KeyStroke;
  *
  * @author Sam
  */
-public class minesweepermenu extends JFrame {
+public class minesweepermenu extends JFrame{
     
     //Menu Bar
     private JMenuBar mainMenu;
@@ -52,6 +55,7 @@ public class minesweepermenu extends JFrame {
         
         this.setLocationRelativeTo(null);
         //Menu Bar
+        
         mainMenu = new JMenuBar();
         menu = new JMenu("Game");
         mainMenu.add(menu);

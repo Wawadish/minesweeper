@@ -1,3 +1,4 @@
+package minesweeper;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -34,13 +35,14 @@ public class MainWindow extends JFrame implements KeyListener {
         minesweepermenu.gameInProgress.setText("Game is in progress...");
 
         this.addKeyListener(this);
-
+        
         //Making the window a square, that will fit 8 square buttons (80px Height and Width).
         setSize(640, 640);
 
         //Creating the buttons in the buttons array(8x8)
         this.setLocationRelativeTo(null);
-        this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+        
+        this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSED));
 
         //creating a container and retrieve the MainWindow's content pane from it.
         Container container = this.getContentPane();
@@ -52,6 +54,14 @@ public class MainWindow extends JFrame implements KeyListener {
         //Creating a two dimensional array of Blocks to be filled with Empty Blocks, Mine Blocks and Number Blocks.
         blocks = new Block[8][8];
 
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent we) {
+                minesweepermenu.numberGamesLost++;
+                minesweepermenu.gamesLost.setText("Games Lost:\n" + minesweepermenu.numberGamesLost);
+                minesweepermenu.gameInProgress.setText("The game is done. You lost!");
+            }  
+        });
         //Making all Blocks in the blocks array Empty Blocks.
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -93,6 +103,7 @@ public class MainWindow extends JFrame implements KeyListener {
                 //Making the buttons 80px x 80px to fit the main window size.
 
                 buttons[i][j].setSize(80, 80);
+                buttons[i][j].setFocusable(false);
                 final int row = i;
                 final int column = j;
 
@@ -104,11 +115,10 @@ public class MainWindow extends JFrame implements KeyListener {
 
                         //This code is executed every time a button  is clicked.
                         //Disabling the button.
+                        if(!buttons[row][column].getText().equals("Flag")){
                         buttons[row][column].setEnabled(false);
-
                         //Depending on which type of block was clicked, execute a different command
                         switch (blocks[row][column]) {
-
                             //For number blocks, set the block text to whichever number it is.
                             case ONE:
                                 buttons[row][column].setText("1");
@@ -145,9 +155,46 @@ public class MainWindow extends JFrame implements KeyListener {
                                 minesweepermenu.gameInProgress.setText("The game is done. You lost!");
                                 this.dispose();
                         }
+                        }
+                        
                     } else {
-                        buttons[row][column].setText("Flag");
+                        if(DEBUG_MODE && buttons[row][column].getText().equals("Flag") && blocks[row][column] == Block.MINE){
+                            buttons[row][column].setText("Mine");
+                            return;
+                        }else if( buttons[row][column].getText().equals("Flag")){
+                            switch(blocks[row][column]){
+                            case ONE:
+                                buttons[row][column].setText("1");
+                                break;
+                            case TWO:
+                                buttons[row][column].setText("2");
+                                break;
+                            case THREE:
+                                buttons[row][column].setText("3");
+                                break;
+                            case FOUR:
+                                buttons[row][column].setText("4");
+                                break;
+                            case FIVE:
+                                buttons[row][column].setText("5");
+                                break;
+                            case SIX:
+                                buttons[row][column].setText("6");
+                                break;
+                            case SEVEN:
+                                buttons[row][column].setText("7");
+                                break;
+                            case EIGHT:
+                                buttons[row][column].setText("8");
+                                break;
+                            case EMPTY:
+                                buttons[row][column].setText("");
+                            }
+                        }else{
+                            buttons[row][column].setText("Flag");
+                        }
                     }
+                    checkWin();
                 });
 
                 //Adding the buttons to the Main Window
@@ -188,6 +235,7 @@ public class MainWindow extends JFrame implements KeyListener {
 
         //Display the frame.
         this.setVisible(true);
+        this.setFocusable(true);
     }
     //The above bracket marks the end of the Main Window constructor.
 
@@ -196,7 +244,6 @@ public class MainWindow extends JFrame implements KeyListener {
       This method also shows Number Blocks adjacent to empty Blocks. It basically uses the check method on all 4
       directions up, down, left and right*/
     public void emptyCheck(int x, int y) {
-
         try {
             //Makes the program check every block under.
             check(x + 1, y);
@@ -336,6 +383,24 @@ public class MainWindow extends JFrame implements KeyListener {
                 return "error";
         }
     }
+    
+    public void checkWin(){
+        int winCounter = 0;
+        for(int h = 0; h < 8; h++){
+            for (int k = 0; k < 8; k++) {
+                if(!buttons[h][k].isEnabled()){
+                    winCounter++;
+                    System.out.println(winCounter);
+                } 
+            }
+        }
+        if(winCounter == 54){
+            minesweepermenu.numberGamesWon++;
+            minesweepermenu.gamesWon.setText("Games Won:\n" + minesweepermenu.numberGamesWon);
+            minesweepermenu.gameInProgress.setText("The game is done. You won!");
+            this.dispose();
+        }
+    }
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -344,7 +409,7 @@ public class MainWindow extends JFrame implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_C) {
+        if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
             keyPressed = true;
         }
     }
