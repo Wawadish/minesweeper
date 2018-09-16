@@ -1,19 +1,16 @@
-package minesweeper;
+
 
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.*;
 import java.io.File;
-import java.io.IOException;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.*;
 import javax.swing.*;
 
 /**
@@ -22,8 +19,8 @@ import javax.swing.*;
 public class MainWindow extends JFrame implements KeyListener {
 
     //Sound Files
-    private File winSound = new File("C:\\Users\\Samuel\\Documents\\GitHub\\minesweeper\\src\\minesweeper\\america-fuck-yeah-ultimate-edition-1.WAV");
-    private File lostSound = new File("C:\\Users\\Samuel\\Documents\\GitHub\\minesweeper\\src\\minesweeper\\wtf_boom.WAV");
+    private File winSound = new File("assets/win.wav");
+    private File lostSound = new File("assets/lose.wav");
 
     private int mineCounter = 0;
 
@@ -122,7 +119,7 @@ public class MainWindow extends JFrame implements KeyListener {
                         //Disabling the button.
                         if (!buttons[row][column].getText().equals("Flag")) {
                             buttons[row][column].setEnabled(false);
-                            
+
                             //For number blocks, set the block text to whichever number it is.
                             setTextButton(blocks, row, column);
                             //Depending on which type of block was clicked, execute a different command
@@ -136,8 +133,8 @@ public class MainWindow extends JFrame implements KeyListener {
                                     minesweepermenu.numberGamesLost++;
                                     minesweepermenu.gamesLost.setText("Games Lost:\n" + minesweepermenu.numberGamesLost);
                                     minesweepermenu.gameInProgress.setText("The game is done. You lost!");
-                                    this.dispose();
                                     playSound(lostSound);
+                                    this.dispose();
                             }
                         }
 
@@ -147,9 +144,9 @@ public class MainWindow extends JFrame implements KeyListener {
                             return;
                         } else if (buttons[row][column].getText().equals("Flag") && !DEBUG_MODE) {
                             buttons[row][column].setText("");
-                        } else if(buttons[row][column].getText().equals("Flag") && DEBUG_MODE) {
+                        } else if (buttons[row][column].getText().equals("Flag") && DEBUG_MODE) {
                             setTextButton(blocks, row, column);
-                        }else {
+                        } else {
                             buttons[row][column].setText("Flag");
                         }
                     }
@@ -203,8 +200,10 @@ public class MainWindow extends JFrame implements KeyListener {
         if ((x != 8) && (y != -1) && (x != -1) && (y != 8) && (blocks[x][y] == Block.ONE || blocks[x][y] == Block.TWO
                 || blocks[x][y] == Block.THREE || blocks[x][y] == Block.FOUR || blocks[x][y] == Block.FIVE
                 || blocks[x][y] == Block.SIX || blocks[x][y] == Block.SEVEN || blocks[x][y] == Block.EIGHT)) {
+
             buttons[x][y].setEnabled(false);
             buttons[x][y].setText(getBlockString(blocks[x][y]));
+
         }
         if ((x != 8) && (x != -1) && (y != 8) && (y != -1) && blocks[x][y] == Block.EMPTY && buttons[x][y].isEnabled()) {
             buttons[x][y].setEnabled(false);
@@ -319,7 +318,7 @@ public class MainWindow extends JFrame implements KeyListener {
                 return "error";
         }
     }
-    
+
     //This method adds text on a button
     public void setTextButton(Block[][] blocks, int x, int y) {
         switch (blocks[x][y]) {
@@ -353,7 +352,7 @@ public class MainWindow extends JFrame implements KeyListener {
         }
 
     }
-    
+
     //This method checks if the winning conditions are attained
     public void checkWin() {
         int winCounter = 0;
@@ -376,16 +375,19 @@ public class MainWindow extends JFrame implements KeyListener {
     //Method to play winning and losing sound
     public void playSound(File sound) {
         try {
+            AudioInputStream ais = AudioSystem.getAudioInputStream(sound);
             Clip clip = AudioSystem.getClip();
-            clip.open(AudioSystem.getAudioInputStream(sound));
+            clip.open(ais);
             clip.start();
-        } catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
+    //Used to introduce the flagging mechanic by holding CTRL
     @Override
     public void keyTyped(KeyEvent e) {
-        
+
     }
 
     @Override
